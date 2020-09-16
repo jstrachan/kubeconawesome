@@ -1,0 +1,314 @@
+buildPack: javascript
+pipelineConfig:
+  agent:
+    image: nodejs
+    label: jenkins-nodejs
+  env:
+  - name: APP_NAME
+    value: kubeconawesome
+  - name: BRANCH_NAME
+    value: master
+  - name: BUILD_NUMBER
+    value: "3"
+  - name: JOB_NAME
+    value: jstrachan/kubeconawesome/master
+  - name: JOB_SPEC
+    value: type:postsubmit
+  - name: JOB_TYPE
+    value: postsubmit
+  - name: PIPELINE_CONTEXT
+    value: release
+  - name: PIPELINE_KIND
+    value: release
+  - name: PULL_BASE_REF
+    value: master
+  - name: PULL_BASE_SHA
+    value: 2f70152c03e1339d7fd3bfe33cabb7d43305400f
+  - name: PULL_REFS
+    value: master:2f70152c03e1339d7fd3bfe33cabb7d43305400f
+  - name: REPO_NAME
+    value: kubeconawesome
+  - name: REPO_OWNER
+    value: jstrachan
+  - name: SOURCE_URL
+    value: https://github.com/jstrachan/kubeconawesome.git
+  extends:
+    file: javascript/pipeline.yaml
+    import: classic
+  pipelines:
+    post: {}
+    pullRequest:
+      pipeline:
+        env:
+        - name: APP_NAME
+          value: kubeconawesome
+        - name: BRANCH_NAME
+          value: master
+        - name: BUILD_NUMBER
+          value: "3"
+        - name: JOB_NAME
+          value: jstrachan/kubeconawesome/master
+        - name: JOB_SPEC
+          value: type:postsubmit
+        - name: JOB_TYPE
+          value: postsubmit
+        - name: PIPELINE_CONTEXT
+          value: release
+        - name: PIPELINE_KIND
+          value: release
+        - name: PULL_BASE_REF
+          value: master
+        - name: PULL_BASE_SHA
+          value: 2f70152c03e1339d7fd3bfe33cabb7d43305400f
+        - name: PULL_REFS
+          value: master:2f70152c03e1339d7fd3bfe33cabb7d43305400f
+        - name: REPO_NAME
+          value: kubeconawesome
+        - name: REPO_OWNER
+          value: jstrachan
+        - name: SOURCE_URL
+          value: https://github.com/jstrachan/kubeconawesome.git
+        options:
+          containerOptions:
+            env:
+            - name: APP_NAME
+              value: kubeconawesome
+            - name: BRANCH_NAME
+              value: master
+            - name: BUILD_NUMBER
+              value: "3"
+            - name: DOCKER_REGISTRY
+              valueFrom:
+                configMapKeyRef:
+                  key: docker.registry
+                  name: jenkins-x-docker-registry
+            - name: GIT_AUTHOR_EMAIL
+              value: jenkins-x@googlegroups.com
+            - name: GIT_AUTHOR_NAME
+              value: jenkins-x-bot
+            - name: GIT_COMMITTER_EMAIL
+              value: jenkins-x@googlegroups.com
+            - name: GIT_COMMITTER_NAME
+              value: jenkins-x-bot
+            - name: JOB_NAME
+              value: jstrachan/kubeconawesome/master
+            - name: JOB_SPEC
+              value: type:postsubmit
+            - name: JOB_TYPE
+              value: postsubmit
+            - name: PIPELINE_CONTEXT
+              value: release
+            - name: PIPELINE_KIND
+              value: release
+            - name: PULL_BASE_REF
+              value: master
+            - name: PULL_BASE_SHA
+              value: 2f70152c03e1339d7fd3bfe33cabb7d43305400f
+            - name: PULL_REFS
+              value: master:2f70152c03e1339d7fd3bfe33cabb7d43305400f
+            - name: REPO_NAME
+              value: kubeconawesome
+            - name: REPO_OWNER
+              value: jstrachan
+            - name: SOURCE_URL
+              value: https://github.com/jstrachan/kubeconawesome.git
+            - name: XDG_CONFIG_HOME
+              value: /home/jenkins
+            name: ""
+            resources:
+              requests:
+                cpu: 400m
+                memory: 512Mi
+            securityContext:
+              privileged: true
+            volumeMounts:
+            - mountPath: /home/jenkins
+              name: workspace-volume
+          volumes:
+          - emptyDir: {}
+            name: workspace-volume
+        stages:
+        - agent:
+            image: nodejs
+          dir: /workspace/source
+          name: from-build-pack
+          steps:
+          - command: jx step credential -s npm-token -k file -f /builder/home/.npmrc --optional=true
+            dir: /workspace/source
+            image: nodejs
+            name: build-npmrc
+          - command: npm install
+            dir: /workspace/source
+            image: nodejs
+            name: build-npm-install
+          - command: CI=true DISPLAY=:99 npm test
+            dir: /workspace/source
+            image: nodejs
+            name: build-npm-test
+          - command: /kaniko/executor $KANIKO_FLAGS --cache=true --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/cache
+            dir: /workspace/source
+            env:
+            - name: NO_GOOGLE_APPLICATION_CREDENTIALS
+              value: "true"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+            image: gcr.io/kaniko-project/executor
+            name: build-container-build
+          - command: jx preview create --app $APP_NAME
+            dir: /workspace/source
+            image: gcr.io/jenkinsxio/jx-cli
+            name: promote-jx-preview
+    release:
+      pipeline:
+        env:
+        - name: APP_NAME
+          value: kubeconawesome
+        - name: BRANCH_NAME
+          value: master
+        - name: BUILD_NUMBER
+          value: "3"
+        - name: JOB_NAME
+          value: jstrachan/kubeconawesome/master
+        - name: JOB_SPEC
+          value: type:postsubmit
+        - name: JOB_TYPE
+          value: postsubmit
+        - name: PIPELINE_CONTEXT
+          value: release
+        - name: PIPELINE_KIND
+          value: release
+        - name: PULL_BASE_REF
+          value: master
+        - name: PULL_BASE_SHA
+          value: 2f70152c03e1339d7fd3bfe33cabb7d43305400f
+        - name: PULL_REFS
+          value: master:2f70152c03e1339d7fd3bfe33cabb7d43305400f
+        - name: REPO_NAME
+          value: kubeconawesome
+        - name: REPO_OWNER
+          value: jstrachan
+        - name: SOURCE_URL
+          value: https://github.com/jstrachan/kubeconawesome.git
+        options:
+          containerOptions:
+            env:
+            - name: APP_NAME
+              value: kubeconawesome
+            - name: BRANCH_NAME
+              value: master
+            - name: BUILD_NUMBER
+              value: "3"
+            - name: DOCKER_REGISTRY
+              valueFrom:
+                configMapKeyRef:
+                  key: docker.registry
+                  name: jenkins-x-docker-registry
+            - name: GIT_AUTHOR_EMAIL
+              value: jenkins-x@googlegroups.com
+            - name: GIT_AUTHOR_NAME
+              value: jenkins-x-bot
+            - name: GIT_COMMITTER_EMAIL
+              value: jenkins-x@googlegroups.com
+            - name: GIT_COMMITTER_NAME
+              value: jenkins-x-bot
+            - name: JOB_NAME
+              value: jstrachan/kubeconawesome/master
+            - name: JOB_SPEC
+              value: type:postsubmit
+            - name: JOB_TYPE
+              value: postsubmit
+            - name: PIPELINE_CONTEXT
+              value: release
+            - name: PIPELINE_KIND
+              value: release
+            - name: PULL_BASE_REF
+              value: master
+            - name: PULL_BASE_SHA
+              value: 2f70152c03e1339d7fd3bfe33cabb7d43305400f
+            - name: PULL_REFS
+              value: master:2f70152c03e1339d7fd3bfe33cabb7d43305400f
+            - name: REPO_NAME
+              value: kubeconawesome
+            - name: REPO_OWNER
+              value: jstrachan
+            - name: SOURCE_URL
+              value: https://github.com/jstrachan/kubeconawesome.git
+            - name: XDG_CONFIG_HOME
+              value: /home/jenkins
+            name: ""
+            resources:
+              requests:
+                cpu: 400m
+                memory: 512Mi
+            securityContext:
+              privileged: true
+            volumeMounts:
+            - mountPath: /home/jenkins
+              name: workspace-volume
+          volumes:
+          - emptyDir: {}
+            name: workspace-volume
+        stages:
+        - agent:
+            image: nodejs
+          dir: /workspace/source
+          name: from-build-pack
+          steps:
+          - command: jx step git credentials
+            dir: /workspace/source
+            image: nodejs
+            name: setup-jx-git-credentials
+          - command: jx step credential -s npm-token -k file -f /builder/home/.npmrc --optional=true
+            dir: /workspace/source
+            image: nodejs
+            name: build-npmrc
+          - command: npm install
+            dir: /workspace/source
+            image: nodejs
+            name: build-npm-install
+          - command: CI=true DISPLAY=:99 npm test
+            dir: /workspace/source
+            image: nodejs
+            name: build-npm-test
+          - command: /kaniko/executor $KANIKO_FLAGS --cache=true --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME:$VERSION --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/cache
+            dir: /workspace/source
+            env:
+            - name: NO_GOOGLE_APPLICATION_CREDENTIALS
+              value: "true"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+            image: gcr.io/kaniko-project/executor
+            name: build-container-build
+          - command: jx step changelog --batch-mode --version v${VERSION}
+            dir: /workspace/source/charts/kubeconawesome
+            image: gcr.io/jenkinsxio/builder-go
+            name: promote-changelog
+          - command: jx step helm release
+            dir: /workspace/source/charts/kubeconawesome
+            image: gcr.io/jenkinsxio/builder-go
+            name: promote-helm-release
+          - command: jx promote -b --all-auto --timeout 1h
+            dir: /workspace/source/charts/kubeconawesome
+            image: gcr.io/jenkinsxio/jx-cli
+            name: promote-jx-promote
+      setVersion:
+        steps:
+        - image: nodejs
+          steps:
+          - comment: so we can retrieve the version in later steps
+            name: next-version
+            sh: jx step next-version --filename package.json
+          - name: tag-version
+            sh: jx step tag --version \$(cat VERSION)
+        - comment: so we can retrieve the version in later steps
+          image: gcr.io/jenkinsxio/builder-go
+          name: next-version
+          sh: jx step next-version --filename package.json
+        - image: gcr.io/jenkinsxio/builder-go
+          name: update-version
+          sh: jx step tag --version \$(cat VERSION) --no-apply
+        - comment: lets release the versioned kubernetes resources for consumption via kubectl/kpt/kustomize
+          image: gcr.io/jenkinsxio/jx-cli
+          name: helm-template
+          sh: 'echo disabled: jx gitops helm template --optional'
+        - image: gcr.io/jenkinsxio/builder-go
+          name: tag-version
+          sh: jx step tag --version \$(cat VERSION)
