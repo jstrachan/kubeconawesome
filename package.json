@@ -1,6 +1,6 @@
 {
   "name": "REPLACE_ME",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Simple Hello World that listens on localhost:8080",
   "main": "server.js",
   "scripts": {
