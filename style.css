@@ -1,0 +1,42 @@
+body {
+  background: #1e252c;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: #fff;
+  overflow: hidden;
+}
+h1 {
+  font-size: 4rem;
+  font-weight: 100;
+  margin: 0;
+  padding: 0;
+}
+.brand {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 100;
+}
+.cover {
+  display: grid;
+  min-height: 100vh;
+  text-align: center;
+}
+.feature {
+  animation-duration: 3s;
+  animation-name: fadeIn;
+  animation-fill-mode: both;
+  background: url(jx.svg) no-repeat center 50px;
+  background-size: 500px 500px;
+  padding: 12rem 2rem 0;
+  -webkit-animation-fill-mode: both;
+  -webkit-animation-name: fadeIn;
+  -webkit-animation-duration: 3s;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

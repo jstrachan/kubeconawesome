@@ -1,0 +1,10 @@
+{
+  "name": "REPLACE_ME",
+  "version": "1.0.0",
+  "description": "Simple Hello World that listens on localhost:8080",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"no test specified\" && exit 0",
+    "start": "node server.js"
+  }
+}
