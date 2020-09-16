@@ -1,0 +1,14 @@
+image:
+  repository: "{{ requiredEnv "DOCKER_REGISTRY" }}/{{ requiredEnv "DOCKER_REGISTRY_ORG" }}/{{ requiredEnv "APP_NAME" }}"
+  tag: "{{ requiredEnv "VERSION" }}"
+
+jxRequirements:
+  ingress:
+    # lets use a sub domain for the preview
+    namespaceSubDomain: "-{{ requiredEnv "PREVIEW_NAMESPACE" }}."
+    domain: "{{ .Values.jxRequirements.ingress.domain }}"
+
+# optional list of image pull secrets to use to pull images
+jx:
+  imagePullSecrets:
+    - knative-docker-user-pass
